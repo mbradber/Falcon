@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C61FC85A1EEC6BC7000F2188 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C61FC8591EEC6BC7000F2188 /* main.cpp */; };
 		C61FC8641EEC712F000F2188 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C61FC8631EEC712F000F2188 /* libGLEW.a */; };
+		C66F9A251EF5D03C001A0303 /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C66F9A241EF5D03C001A0303 /* stb_image.cpp */; };
 		C691FCF81EEC7B680090DE2C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C691FCF71EEC7B680090DE2C /* Cocoa.framework */; };
 		C691FCF91EEC7B700090DE2C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61FC8611EEC7121000F2188 /* OpenGL.framework */; };
 		C691FCFB1EEC7B770090DE2C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C691FCFA1EEC7B770090DE2C /* IOKit.framework */; };
@@ -34,6 +35,8 @@
 		C61FC8591EEC6BC7000F2188 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C61FC8611EEC7121000F2188 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C61FC8631EEC712F000F2188 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = lib/glew/lib/libGLEW.a; sourceTree = "<group>"; };
+		C66F9A241EF5D03C001A0303 /* stb_image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stb_image.cpp; path = Falcon/stb_image.cpp; sourceTree = "<group>"; };
+		C66F9A261EF5D062001A0303 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stb_image.h; path = Falcon/stb_image.h; sourceTree = "<group>"; };
 		C691FCF71EEC7B680090DE2C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		C691FCFA1EEC7B770090DE2C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		C691FCFC1EEC7B7E0090DE2C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -64,6 +67,7 @@
 		C61FC84D1EEC6BC7000F2188 = {
 			isa = PBXGroup;
 			children = (
+				C66F9A221EF5CFBD001A0303 /* stb */,
 				C691FD001EEC83360090DE2C /* anton */,
 				C691FD041EEC85400090DE2C /* shaders */,
 				C61FC8581EEC6BC7000F2188 /* Falcon */,
@@ -99,6 +103,15 @@
 				C61FC8611EEC7121000F2188 /* OpenGL.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C66F9A221EF5CFBD001A0303 /* stb */ = {
+			isa = PBXGroup;
+			children = (
+				C66F9A261EF5D062001A0303 /* stb_image.h */,
+				C66F9A241EF5D03C001A0303 /* stb_image.cpp */,
+			);
+			name = stb;
 			sourceTree = "<group>";
 		};
 		C691FD001EEC83360090DE2C /* anton */ = {
@@ -177,6 +190,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C66F9A251EF5D03C001A0303 /* stb_image.cpp in Sources */,
 				C691FD031EEC83B60090DE2C /* gl_utils.cpp in Sources */,
 				C61FC85A1EEC6BC7000F2188 /* main.cpp in Sources */,
 			);

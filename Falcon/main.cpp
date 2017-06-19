@@ -17,6 +17,8 @@
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
 
+#include "stb_image.h"
+
 #define GL_LOG_FILE "gl.log"
 
 // keep track of window size for things like the viewport and the mouse cursor
@@ -108,7 +110,8 @@ int main() {
     float cam_yaw_speed = 100.0f;
     float cam_yaw = 0.0f;
     glm::vec3 cam_pos(0.0f, 0.0f, 2.0f);
-    glm::mat4 mat_model = glm::mat4(1.0f);
+    glm::mat4 mat_model = glm::rotate(glm::mat4(1.f), glm::radians(45.f), glm::vec3(0.f, 1.f, 0.f));
+    mat_model = glm::mat4(1.f);
     glm::mat4 mat_view = glm::translate(glm::mat4(1.0f), glm::vec3(-cam_pos.x, -cam_pos.y, -cam_pos.z));
     glm::mat4 mat_projection = glm::perspective(glm::radians(67.0f), float(g_gl_width / g_gl_height), 0.1f, 100.f);
     

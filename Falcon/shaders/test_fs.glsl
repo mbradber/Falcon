@@ -14,7 +14,7 @@ vec3 La = vec3 (0.2, 0.2, 0.2); // grey ambient colour
 vec3 Ks = vec3 (1.0, 1.0, 1.0); // fully reflect specular light
 vec3 Kd = vec3 (1.0, 0.5, 0.0); // orange diffuse surface reflectance
 vec3 Ka = vec3 (1.0, 1.0, 1.0); // fully reflect ambient light
-float specular_exponent = 100.0; // specular 'power'
+float specular_exponent = 200.0; // specular 'power'
 
 out vec4 fragment_colour; // final colour of surface
 
@@ -23,10 +23,21 @@ void main() {
     vec3 Ia = La * Ka;
     
     // diffuse intensity
-    vec3 Id = vec3 (0.0, 0.0, 0.0); // replace me later
+    // raise light position to eye space
+    vec3 light_position_eye = vec3 (view_mat * vec4 (light_position_world, 1.0));
+    vec3 distance_to_light_eye = light_position_eye - position_eye;
+    vec3 direction_to_light_eye = normalize (distance_to_light_eye);
+    float dot_prod = dot (direction_to_light_eye, normal_eye);
+    dot_prod = max (dot_prod, 0.0);
+    vec3 Id = Ld * Kd * dot_prod; // final diffuse intensity
     
-    // specular intensity
-    vec3 Is = vec3 (0.0, 0.0, 0.0); // replace me later //
+    // specular intensity (blinn-phong, not using expensive 'reflect' here
+    vec3 surface_to_viewer_eye = normalize (-position_eye);
+    vec3 half_way_eye = normalize (surface_to_viewer_eye + direction_to_light_eye);
+    float dot_prod_specular = max (0.0, dot (half_way_eye, normal_eye));
+    float specular_factor = pow (dot_prod_specular, specular_exponent);
+    
+    vec3 Is = Ls * Ks * specular_factor; // final specular intensity
     
     fragment_colour = vec4 (Is + Id + Ia, 1.0);
 }
