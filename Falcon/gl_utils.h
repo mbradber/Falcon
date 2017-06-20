@@ -50,4 +50,8 @@ bool is_valid( GLuint sp );
 
 bool parse_file_into_str( const char *file_name, char *shader_str, int max_len );
 
+/* just use this func to create most shaders; give it vertex and frag files */
+GLuint create_programme_from_files( const char *vert_file_name,
+                                  const char *frag_file_name );
+
 #endif

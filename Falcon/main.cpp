@@ -19,6 +19,13 @@
 
 #include "stb_image.h"
 
+#include <assimp/cimport.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+//#define MESH_FILE "mesh/cube.dae"
+#define MESH_FILE "mesh/monkey2.obj"
+
 #define GL_LOG_FILE "gl.log"
 
 // keep track of window size for things like the viewport and the mouse cursor
@@ -26,86 +33,128 @@ int g_gl_width = 640;
 int g_gl_height = 480;
 GLFWwindow *g_window = NULL;
 
-int main() {
-    restart_gl_log();
-    // all the GLFW and GLEW start-up code is moved to here in gl_utils.cpp
-    start_gl();
-    // tell GL to only draw onto a pixel if the shape is closer to the viewer
-    glEnable( GL_DEPTH_TEST ); // enable depth-testing
-    glDepthFunc( GL_LESS );		 // depth-testing interprets a smaller value as "closer"
-    
-    /* OTHER STUFF GOES HERE NEXT */
-    GLfloat points[] = { 0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f };
-    
-    GLfloat normals[] = {
-        0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-    };
-    
-    GLuint points_vbo;
-    glGenBuffers( 1, &points_vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, points_vbo );
-    glBufferData( GL_ARRAY_BUFFER, 9 * sizeof( GLfloat ), points, GL_STATIC_DRAW );
-    
-    GLuint normals_vbo;
-    glGenBuffers( 1, &normals_vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, normals_vbo );
-    glBufferData( GL_ARRAY_BUFFER, 9 * sizeof( GLfloat ), normals, GL_STATIC_DRAW );
-    
-    GLuint vao;
-    glGenVertexArrays( 1, &vao );
-    glBindVertexArray( vao );
-    glBindBuffer( GL_ARRAY_BUFFER, points_vbo );
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, NULL );
-    glBindBuffer( GL_ARRAY_BUFFER, normals_vbo );
-    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, NULL );
-    glEnableVertexAttribArray( 0 );
-    glEnableVertexAttribArray( 1 );
-    
-    char vertex_shader[1024 * 256];
-    char fragment_shader[1024 * 256];
-    parse_file_into_str( "shaders/test_vs.glsl", vertex_shader, 1024 * 256 );
-    parse_file_into_str( "shaders/test_fs.glsl", fragment_shader, 1024 * 256 );
-    
-    GLuint vs = glCreateShader( GL_VERTEX_SHADER );
-    const GLchar *p = (const GLchar *)vertex_shader;
-    glShaderSource( vs, 1, &p, NULL );
-    glCompileShader( vs );
-    
-    // check for compile errors
-    int params = -1;
-    glGetShaderiv( vs, GL_COMPILE_STATUS, &params );
-    if ( GL_TRUE != params ) {
-        fprintf( stderr, "ERROR: GL shader index %i did not compile\n", vs );
-        print_shader_info_log( vs );
-        return 1; // or exit or something
-    }
-    
-    GLuint fs = glCreateShader( GL_FRAGMENT_SHADER );
-    p = (const GLchar *)fragment_shader;
-    glShaderSource( fs, 1, &p, NULL );
-    glCompileShader( fs );
-    
-    // check for compile errors
-    glGetShaderiv( fs, GL_COMPILE_STATUS, &params );
-    if ( GL_TRUE != params ) {
-        fprintf( stderr, "ERROR: GL shader index %i did not compile\n", fs );
-        print_shader_info_log( fs );
-        return 1; // or exit or something
-    }
-    
-    GLuint shader_programme = glCreateProgram();
-    glAttachShader( shader_programme, fs );
-    glAttachShader( shader_programme, vs );
-    glLinkProgram( shader_programme );
-    
-    glGetProgramiv( shader_programme, GL_LINK_STATUS, &params );
-    if ( GL_TRUE != params ) {
-        fprintf( stderr, "ERROR: could not link shader programme GL index %i\n",
-                shader_programme );
-        print_programme_info_log( shader_programme );
+/* load a mesh using the assimp library */
+bool load_mesh( const char *file_name, GLuint *vao, int *point_count ) {
+    const aiScene *scene = aiImportFile( file_name, aiProcess_Triangulate );
+    if ( !scene ) {
+        fprintf( stderr, "ERROR: reading mesh %s\n", file_name );
         return false;
     }
+    printf( "  %i animations\n", scene->mNumAnimations );
+    printf( "  %i cameras\n", scene->mNumCameras );
+    printf( "  %i lights\n", scene->mNumLights );
+    printf( "  %i materials\n", scene->mNumMaterials );
+    printf( "  %i meshes\n", scene->mNumMeshes );
+    printf( "  %i textures\n", scene->mNumTextures );
     
+    /* get first mesh in file only */
+    const aiMesh *mesh = scene->mMeshes[0];
+    printf( "    %i vertices in mesh[0]\n", mesh->mNumVertices );
+    
+    /* pass back number of vertex points in mesh */
+    *point_count = mesh->mNumVertices;
+    
+    /* generate a VAO, using the pass-by-reference parameter that we give to the
+     function */
+    glGenVertexArrays( 1, vao );
+    glBindVertexArray( *vao );
+    
+    /* we really need to copy out all the data from AssImp's funny little data
+     structures into pure contiguous arrays before we copy it into data buffers
+     because assimp's texture coordinates are not really contiguous in memory.
+     i allocate some dynamic memory to do this. */
+    GLfloat *points = NULL;		 // array of vertex points
+    GLfloat *normals = NULL;	 // array of vertex normals
+    GLfloat *texcoords = NULL; // array of texture coordinates
+    if ( mesh->HasPositions() ) {
+        points = (GLfloat *)malloc( *point_count * 3 * sizeof( GLfloat ) );
+        for ( int i = 0; i < *point_count; i++ ) {
+            const aiVector3D *vp = &( mesh->mVertices[i] );
+            points[i * 3] = (GLfloat)vp->x;
+            points[i * 3 + 1] = (GLfloat)vp->y;
+            points[i * 3 + 2] = (GLfloat)vp->z;
+        }
+    }
+    if ( mesh->HasNormals() ) {
+        normals = (GLfloat *)malloc( *point_count * 3 * sizeof( GLfloat ) );
+        for ( int i = 0; i < *point_count; i++ ) {
+            const aiVector3D *vn = &( mesh->mNormals[i] );
+            normals[i * 3] = (GLfloat)vn->x;
+            normals[i * 3 + 1] = (GLfloat)vn->y;
+            normals[i * 3 + 2] = (GLfloat)vn->z;
+        }
+    }
+    if ( mesh->HasTextureCoords( 0 ) ) {
+        texcoords = (GLfloat *)malloc( *point_count * 2 * sizeof( GLfloat ) );
+        for ( int i = 0; i < *point_count; i++ ) {
+            const aiVector3D *vt = &( mesh->mTextureCoords[0][i] );
+            texcoords[i * 2] = (GLfloat)vt->x;
+            texcoords[i * 2 + 1] = (GLfloat)vt->y;
+        }
+    }
+    
+    /* copy mesh data into VBOs */
+    if ( mesh->HasPositions() ) {
+        GLuint vbo;
+        glGenBuffers( 1, &vbo );
+        glBindBuffer( GL_ARRAY_BUFFER, vbo );
+        glBufferData( GL_ARRAY_BUFFER, 3 * *point_count * sizeof( GLfloat ), points,
+                     GL_STATIC_DRAW );
+        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, NULL );
+        glEnableVertexAttribArray( 0 );
+        free( points );
+    }
+    if ( mesh->HasNormals() ) {
+        GLuint vbo;
+        glGenBuffers( 1, &vbo );
+        glBindBuffer( GL_ARRAY_BUFFER, vbo );
+        glBufferData( GL_ARRAY_BUFFER, 3 * *point_count * sizeof( GLfloat ), normals,
+                     GL_STATIC_DRAW );
+        glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, NULL );
+        glEnableVertexAttribArray( 1 );
+        free( normals );
+    }
+    if ( mesh->HasTextureCoords( 0 ) ) {
+        GLuint vbo;
+        glGenBuffers( 1, &vbo );
+        glBindBuffer( GL_ARRAY_BUFFER, vbo );
+        glBufferData( GL_ARRAY_BUFFER, 2 * *point_count * sizeof( GLfloat ), texcoords,
+                     GL_STATIC_DRAW );
+        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 0, NULL );
+        glEnableVertexAttribArray( 2 );
+        free( texcoords );
+    }
+    if ( mesh->HasTangentsAndBitangents() ) {
+        // NB: could store/print tangents here
+    }
+    
+    aiReleaseImport( scene );
+    printf( "mesh loaded\n" );
+    
+    return true;
+}
+
+int main() {
+    restart_gl_log();
+    start_gl();
+    glEnable( GL_DEPTH_TEST ); // enable depth-testing
+    glDepthFunc( GL_LESS );		 // depth-testing interprets a smaller value as "closer"
+    glEnable( GL_CULL_FACE );	// cull face
+    glCullFace( GL_BACK );		 // cull back face
+    glFrontFace( GL_CCW ); // set counter-clock-wise vertex order to mean the front
+    glClearColor( 67 / 255.f, 180 / 255.f, 211 / 255.f, 1.f);
+    glViewport( 0, 0, g_gl_width, g_gl_height );
+    
+   	/* load the mesh using assimp */
+    GLuint monkey_vao;
+    int monkey_point_count = 0;
+    ( load_mesh( MESH_FILE, &monkey_vao, &monkey_point_count ) );
+    
+   	/*-------------------------------CREATE
+     * SHADERS-------------------------------*/
+    GLuint shader_programme = create_programme_from_files( "shaders/test_vs.glsl", "shaders/test_fs.glsl" );
+    
+    // setup matrices / uniforms
     float cam_speed = 1.0f;
     float cam_yaw_speed = 100.0f;
     float cam_yaw = 0.0f;
@@ -119,15 +168,17 @@ int main() {
     int mat_loc_view = glGetUniformLocation( shader_programme, "mat_view" );
     int mat_loc_projection = glGetUniformLocation( shader_programme, "mat_projection" );
     
+    if(mat_loc_model < 0 || mat_loc_view < 0 || mat_loc_projection < 0) {
+        fprintf(stderr, "Error: could not find locations for all uniforms!\n");
+        return 0;
+    }
+    
     glUseProgram( shader_programme );
     glUniformMatrix4fv( mat_loc_model, 1, GL_FALSE, (const float*)glm::value_ptr(mat_model) );
     glUniformMatrix4fv( mat_loc_view, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view) );
     glUniformMatrix4fv( mat_loc_projection, 1, GL_FALSE, (const float*)glm::value_ptr(mat_projection) );
     
-    glEnable( GL_CULL_FACE ); // cull face
-    glCullFace( GL_BACK );		// cull back face
-    glFrontFace( GL_CW );			// GL_CCW for counter clock-wise
-    
+    // render loop
     while ( !glfwWindowShouldClose( g_window ) ) {
         // add a timer for doing animation
         static double previous_seconds = glfwGetTime();
@@ -146,9 +197,9 @@ int main() {
         
         // Note: this call is not necessary, but I like to do it anyway before any
         // time that I call glDrawArrays() so I never use the wrong vertex data
-        glBindVertexArray( vao );
+        glBindVertexArray( monkey_vao );
         // draw points 0-3 from the currently bound VAO with current in-use shader
-        glDrawArrays( GL_TRIANGLES, 0, 3 );
+        glDrawArrays( GL_TRIANGLES, 0, monkey_point_count );
         // update other events like input handling
         glfwPollEvents();
         

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C196931C1EF9A152000FBD46 /* libassimp.3.3.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C196931A1EF9A131000FBD46 /* libassimp.3.3.1.dylib */; };
 		C61FC85A1EEC6BC7000F2188 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C61FC8591EEC6BC7000F2188 /* main.cpp */; };
 		C61FC8641EEC712F000F2188 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C61FC8631EEC712F000F2188 /* libGLEW.a */; };
 		C66F9A251EF5D03C001A0303 /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C66F9A241EF5D03C001A0303 /* stb_image.cpp */; };
@@ -31,6 +32,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C196931A1EF9A131000FBD46 /* libassimp.3.3.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.3.1.dylib; path = ../../../../usr/local/Cellar/assimp/3.3.1/lib/libassimp.3.3.1.dylib; sourceTree = "<group>"; };
 		C61FC8561EEC6BC7000F2188 /* Falcon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Falcon; sourceTree = BUILT_PRODUCTS_DIR; };
 		C61FC8591EEC6BC7000F2188 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C61FC8611EEC7121000F2188 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -52,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C196931C1EF9A152000FBD46 /* libassimp.3.3.1.dylib in Frameworks */,
 				C691FCFF1EEC80390090DE2C /* libglfw3.a in Frameworks */,
 				C691FCFD1EEC7B7E0090DE2C /* CoreVideo.framework in Frameworks */,
 				C691FCFB1EEC7B770090DE2C /* IOKit.framework in Frameworks */,
@@ -95,6 +98,7 @@
 		C61FC8601EEC7121000F2188 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C196931A1EF9A131000FBD46 /* libassimp.3.3.1.dylib */,
 				C691FCFE1EEC80390090DE2C /* libglfw3.a */,
 				C691FCFC1EEC7B7E0090DE2C /* CoreVideo.framework */,
 				C691FCFA1EEC7B770090DE2C /* IOKit.framework */,
@@ -296,12 +300,15 @@
 					"$(PROJECT_DIR)/lib/glew/include/",
 					"$(PROJECT_DIR)/lib/glfw/include/",
 					"$(PROJECT_DIR)/lib/glm/",
+					/usr/local/Cellar/assimp/3.3.1/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/lib/glew/lib/",
 					"$(PROJECT_DIR)/lib/glfw/lib/",
 					"$(PROJECT_DIR)/lib/glew/lib",
 					"$(PROJECT_DIR)/lib/glfw/lib",
+					/usr/local/Cellar/assimp/3.3.1/lib/,
+					/usr/local/Cellar/assimp/3.3.1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -316,12 +323,15 @@
 					"$(PROJECT_DIR)/lib/glew/include/",
 					"$(PROJECT_DIR)/lib/glfw/include/",
 					"$(PROJECT_DIR)/lib/glm/",
+					/usr/local/Cellar/assimp/3.3.1/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/lib/glew/lib/",
 					"$(PROJECT_DIR)/lib/glfw/lib/",
 					"$(PROJECT_DIR)/lib/glew/lib",
 					"$(PROJECT_DIR)/lib/glfw/lib",
+					/usr/local/Cellar/assimp/3.3.1/lib/,
+					/usr/local/Cellar/assimp/3.3.1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_NAME = "$(TARGET_NAME)";
