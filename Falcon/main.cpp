@@ -218,9 +218,36 @@ int main() {
     
     printf( "monkey bone count %i\n", monkey_bone_count );
     
+    /********** BONES ***********/
+    float bone_positions[3 * 256];
+    int c = 0;
+    for ( int i = 0; i < monkey_bone_count; i++ ) {
+//        printf( monkey_bone_offset_matrices[i] );
+        
+        // get the x y z translation elements from the last column in the array
+        float mat_bone_offset[16];
+        const float *matSource = (const float*)glm::value_ptr(monkey_bone_offset_matrices[i]);
+        
+        bone_positions[c++] = -matSource[12];
+        bone_positions[c++] = -matSource[13];
+        bone_positions[c++] = -matSource[14];
+    }
+    
+    GLuint bones_vao;
+    glGenVertexArrays( 1, &bones_vao );
+    glBindVertexArray( bones_vao );
+    GLuint bones_vbo;
+    glGenBuffers( 1, &bones_vbo );
+    glBindBuffer( GL_ARRAY_BUFFER, bones_vbo );
+    glBufferData( GL_ARRAY_BUFFER, 3 * monkey_bone_count * sizeof( float ),
+                 bone_positions, GL_STATIC_DRAW );
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, NULL );
+    glEnableVertexAttribArray( 0 );
+    
    	/*-------------------------------CREATE
      * SHADERS-------------------------------*/
     GLuint shader_programme = create_programme_from_files( "shaders/test_vs.glsl", "shaders/test_fs.glsl" );
+    GLuint bones_shader_programme = create_programme_from_files( "shaders/bones_vs.glsl", "shaders/bones_fs.glsl" );
     
     // setup matrices / uniforms
     float cam_speed = 1.0f;
@@ -246,6 +273,15 @@ int main() {
     glUniformMatrix4fv( mat_loc_view, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view) );
     glUniformMatrix4fv( mat_loc_projection, 1, GL_FALSE, (const float*)glm::value_ptr(mat_projection) );
     
+    // bones shader uniforms
+    glUseProgram( bones_shader_programme );
+    
+    int bones_view_mat_location = glGetUniformLocation( bones_shader_programme, "view" );
+    glUniformMatrix4fv( bones_view_mat_location, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view));
+    
+    int bones_proj_mat_location = glGetUniformLocation( bones_shader_programme, "proj" );
+    glUniformMatrix4fv( bones_proj_mat_location, 1, GL_FALSE, (const float*)glm::value_ptr(mat_projection));
+    
     // render loop
     while ( !glfwWindowShouldClose( g_window ) ) {
         // add a timer for doing animation
@@ -259,15 +295,18 @@ int main() {
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         glViewport( 0, 0, g_gl_width, g_gl_height );
         
-        // Note: this call is not necessary, but I like to do it anyway before any
-        // time that I call glDrawArrays() so I never use the wrong shader programme
+        glEnable( GL_DEPTH_TEST );
         glUseProgram( shader_programme );
-        
-        // Note: this call is not necessary, but I like to do it anyway before any
-        // time that I call glDrawArrays() so I never use the wrong vertex data
         glBindVertexArray( monkey_vao );
-        // draw points 0-3 from the currently bound VAO with current in-use shader
         glDrawArrays( GL_TRIANGLES, 0, monkey_point_count );
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_PROGRAM_POINT_SIZE );
+        glUseProgram( bones_shader_programme );
+        glBindVertexArray( bones_vao );
+        glDrawArrays( GL_POINTS, 0, monkey_bone_count );
+        glDisable( GL_PROGRAM_POINT_SIZE );
+        
         // update other events like input handling
         glfwPollEvents();
         
@@ -313,7 +352,11 @@ int main() {
             glm::mat4 T = glm::translate(glm::mat4(1.0f), glm::vec3(-cam_pos.x, -cam_pos.y, -cam_pos.z));
             mat_view = glm::rotate(T, -glm::radians(cam_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
+            glUseProgram(shader_programme);
             glUniformMatrix4fv( mat_loc_view, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view) );
+            
+            glUseProgram(bones_shader_programme);
+            glUniformMatrix4fv( bones_view_mat_location, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view) );
         }
         
         if ( GLFW_PRESS == glfwGetKey( g_window, GLFW_KEY_ESCAPE ) ) {

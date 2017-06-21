@@ -33,6 +33,8 @@
 
 /* Begin PBXFileReference section */
 		C196931A1EF9A131000FBD46 /* libassimp.3.3.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.3.1.dylib; path = ../../../../usr/local/Cellar/assimp/3.3.1/lib/libassimp.3.3.1.dylib; sourceTree = "<group>"; };
+		C196932F1EFA11A7000FBD46 /* bones_vs.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = bones_vs.glsl; path = Falcon/shaders/bones_vs.glsl; sourceTree = "<group>"; };
+		C19693301EFA11C1000FBD46 /* bones_fs.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = bones_fs.glsl; path = Falcon/shaders/bones_fs.glsl; sourceTree = "<group>"; };
 		C61FC8561EEC6BC7000F2188 /* Falcon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Falcon; sourceTree = BUILT_PRODUCTS_DIR; };
 		C61FC8591EEC6BC7000F2188 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C61FC8611EEC7121000F2188 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -132,6 +134,8 @@
 			children = (
 				C691FD051EEC85910090DE2C /* test_vs.glsl */,
 				C691FD061EEC85C50090DE2C /* test_fs.glsl */,
+				C196932F1EFA11A7000FBD46 /* bones_vs.glsl */,
+				C19693301EFA11C1000FBD46 /* bones_fs.glsl */,
 			);
 			name = shaders;
 			sourceTree = "<group>";
