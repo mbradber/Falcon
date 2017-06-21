@@ -24,17 +24,29 @@
 #include <assimp/postprocess.h>
 
 //#define MESH_FILE "mesh/cube.dae"
-#define MESH_FILE "mesh/monkey2.obj"
+//#define MESH_FILE "mesh/monkey2.obj"
+#define MESH_FILE "mesh/monkey_10.dae"
 
 #define GL_LOG_FILE "gl.log"
+
+/* max bones allowed in a mesh */
+#define MAX_BONES 32
 
 // keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 640;
 int g_gl_height = 480;
 GLFWwindow *g_window = NULL;
 
+glm::mat4 convert_assimp_matrix( aiMatrix4x4 m ) {
+    float srcmat[16] = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, m.a4, m.b4, m.c4, m.d4 };
+    
+    return glm::make_mat4(srcmat);
+}
+
 /* load a mesh using the assimp library */
-bool load_mesh( const char *file_name, GLuint *vao, int *point_count ) {
+bool load_mesh( const char *file_name, GLuint *vao, int *point_count,
+               glm::mat4 *bone_offset_mats, int *bone_count ) {
     const aiScene *scene = aiImportFile( file_name, aiProcess_Triangulate );
     if ( !scene ) {
         fprintf( stderr, "ERROR: reading mesh %s\n", file_name );
@@ -66,6 +78,7 @@ bool load_mesh( const char *file_name, GLuint *vao, int *point_count ) {
     GLfloat *points = NULL;		 // array of vertex points
     GLfloat *normals = NULL;	 // array of vertex normals
     GLfloat *texcoords = NULL; // array of texture coordinates
+    GLint *bone_ids = NULL;		 // array of bone IDs
     if ( mesh->HasPositions() ) {
         points = (GLfloat *)malloc( *point_count * 3 * sizeof( GLfloat ) );
         for ( int i = 0; i < *point_count; i++ ) {
@@ -92,6 +105,46 @@ bool load_mesh( const char *file_name, GLuint *vao, int *point_count ) {
             texcoords[i * 2 + 1] = (GLfloat)vt->y;
         }
     }
+    
+    /* extract bone weights */
+    if ( mesh->HasBones() ) {
+        *bone_count = (int)mesh->mNumBones;
+        /* an array of bones names. max 256 bones, max name length 64 */
+        char bone_names[256][64];
+        
+        /* here I allocate an array of per-vertex bone IDs.
+         each vertex must know which bone(s) affect it
+         here I simplify, and assume that only one bone can affect each vertex,
+         so my array is only one-dimensional
+         */
+        bone_ids = (int *)malloc( *point_count * sizeof( int ) );
+        
+        for ( int b_i = 0; b_i < *bone_count; b_i++ ) {
+            const aiBone *bone = mesh->mBones[b_i];
+            
+            /* get bone names */
+            strcpy( bone_names[b_i], bone->mName.data );
+            printf( "bone_names[%i]=%s\n", b_i, bone_names[b_i] );
+            
+            /* get [inverse] offset matrix for each bone */
+            bone_offset_mats[b_i] = convert_assimp_matrix( bone->mOffsetMatrix );
+            
+            /* get bone weights
+             we can just assume weight is always 1.0, because we are just using 1 bone
+             per vertex. but any bone that affects a vertex will be assigned as the
+             vertex' bone_id */
+            int num_weights = (int)bone->mNumWeights;
+            for ( int w_i = 0; w_i < num_weights; w_i++ ) {
+                aiVertexWeight weight = bone->mWeights[w_i];
+                int vertex_id = (int)weight.mVertexId;
+                // ignore weight if less than 0.5 factor
+                if ( weight.mWeight >= 0.5f ) {
+                    bone_ids[vertex_id] = b_i;
+                }
+            }
+            
+        } // endfor
+    }		// endif
     
     /* copy mesh data into VBOs */
     if ( mesh->HasPositions() ) {
@@ -127,6 +180,16 @@ bool load_mesh( const char *file_name, GLuint *vao, int *point_count ) {
     if ( mesh->HasTangentsAndBitangents() ) {
         // NB: could store/print tangents here
     }
+    if ( mesh->HasBones() ) {
+        GLuint vbo;
+        glGenBuffers( 1, &vbo );
+        glBindBuffer( GL_ARRAY_BUFFER, vbo );
+        glBufferData( GL_ARRAY_BUFFER, *point_count * sizeof( GLint ), bone_ids,
+                     GL_STATIC_DRAW );
+        glVertexAttribIPointer( 3, 1, GL_INT, 0, NULL );
+        glEnableVertexAttribArray( 3 );
+        free( bone_ids );
+    }
     
     aiReleaseImport( scene );
     printf( "mesh loaded\n" );
@@ -145,10 +208,15 @@ int main() {
     glClearColor( 67 / 255.f, 180 / 255.f, 211 / 255.f, 1.f);
     glViewport( 0, 0, g_gl_width, g_gl_height );
     
-   	/* load the mesh using assimp */
+    /* load the mesh using assimp */
     GLuint monkey_vao;
+    glm::mat4 monkey_bone_offset_matrices[MAX_BONES];
     int monkey_point_count = 0;
-    ( load_mesh( MESH_FILE, &monkey_vao, &monkey_point_count ) );
+    int monkey_bone_count = 0;
+    ( load_mesh( MESH_FILE, &monkey_vao, &monkey_point_count,
+                monkey_bone_offset_matrices, &monkey_bone_count ) );
+    
+    printf( "monkey bone count %i\n", monkey_bone_count );
     
    	/*-------------------------------CREATE
      * SHADERS-------------------------------*/
