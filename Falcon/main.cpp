@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <cstdlib>
 
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
@@ -117,7 +118,7 @@ bool load_mesh( const char *file_name, GLuint *vao, int *point_count,
          here I simplify, and assume that only one bone can affect each vertex,
          so my array is only one-dimensional
          */
-        bone_ids = (int *)malloc( *point_count * sizeof( int ) );
+        bone_ids = (int *)calloc( *point_count, sizeof( int ) );
         
         for ( int b_i = 0; b_i < *bone_count; b_i++ ) {
             const aiBone *bone = mesh->mBones[b_i];
@@ -249,6 +250,7 @@ int main() {
     GLuint shader_programme = create_programme_from_files( "shaders/test_vs.glsl", "shaders/test_fs.glsl" );
     GLuint bones_shader_programme = create_programme_from_files( "shaders/bones_vs.glsl", "shaders/bones_fs.glsl" );
     
+    
     // setup matrices / uniforms
     float cam_speed = 1.0f;
     float cam_yaw_speed = 100.0f;
@@ -259,6 +261,8 @@ int main() {
     glm::mat4 mat_view = glm::translate(glm::mat4(1.0f), glm::vec3(-cam_pos.x, -cam_pos.y, -cam_pos.z));
     glm::mat4 mat_projection = glm::perspective(glm::radians(67.0f), float(g_gl_width / g_gl_height), 0.1f, 100.f);
     
+    glUseProgram( shader_programme );
+    
     int mat_loc_model = glGetUniformLocation( shader_programme, "mat_model" );
     int mat_loc_view = glGetUniformLocation( shader_programme, "mat_view" );
     int mat_loc_projection = glGetUniformLocation( shader_programme, "mat_projection" );
@@ -268,10 +272,25 @@ int main() {
         return 0;
     }
     
-    glUseProgram( shader_programme );
     glUniformMatrix4fv( mat_loc_model, 1, GL_FALSE, (const float*)glm::value_ptr(mat_model) );
     glUniformMatrix4fv( mat_loc_view, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view) );
     glUniformMatrix4fv( mat_loc_projection, 1, GL_FALSE, (const float*)glm::value_ptr(mat_projection) );
+    
+    // bone matrices uniforms
+    int bone_matrices_locations[MAX_BONES];
+    char name[64];
+    glm::mat4 mat_identity(1.f);
+    for ( int i = 0; i < MAX_BONES; i++ ) {
+        sprintf( name, "bone_matrices[%i]", i );
+        bone_matrices_locations[i] = glGetUniformLocation( shader_programme, name );
+        
+        if(bone_matrices_locations[i] < 0) {
+            fprintf(stderr, "Error: could not find locations for all uniforms!\n");
+//            return 0;
+        }
+        
+        glUniformMatrix4fv( bone_matrices_locations[i], 1, GL_FALSE, (const float*)glm::value_ptr(mat_identity) );
+    }
     
     // bones shader uniforms
     glUseProgram( bones_shader_programme );

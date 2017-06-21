@@ -6,6 +6,7 @@ layout(location = 2) in vec2 texture_coord;
 layout(location = 3) in int bone_id;
 
 uniform mat4 mat_model, mat_view, mat_projection;
+uniform mat4 bone_matrices[32];
 
 out vec3 normal;
 out vec2 st;
@@ -23,5 +24,5 @@ void main() {
     
     st = texture_coord;
     normal = vertex_normal;
-    gl_Position = mat_projection * mat_view * mat_model * vec4 (vertex_position, 1.0);
+    gl_Position = mat_projection * mat_view * mat_model * bone_matrices[bone_id] * vec4 (vertex_position, 1.0);
 }
