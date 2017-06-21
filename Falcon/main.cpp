@@ -301,6 +301,9 @@ int main() {
     int bones_proj_mat_location = glGetUniformLocation( bones_shader_programme, "proj" );
     glUniformMatrix4fv( bones_proj_mat_location, 1, GL_FALSE, (const float*)glm::value_ptr(mat_projection));
     
+    float theta = 0.0f;
+    float rot_speed = 50.0f; // 50 radians per second
+    
     // render loop
     while ( !glfwWindowShouldClose( g_window ) ) {
         // add a timer for doing animation
@@ -376,6 +379,29 @@ int main() {
             
             glUseProgram(bones_shader_programme);
             glUniformMatrix4fv( bones_view_mat_location, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view) );
+        }
+        
+        // rotate ears
+        glm::mat4 ear_mat(1.f);
+        if ( glfwGetKey( g_window, 'Z' ) ) {
+            theta += rot_speed * elapsed_seconds;
+            glUseProgram( shader_programme );
+            
+            ear_mat = glm::inverse( monkey_bone_offset_matrices[1] ) * glm::rotate( glm::mat4(1.f), glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[1];
+            glUniformMatrix4fv( bone_matrices_locations[1], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
+            
+            ear_mat = glm::inverse( monkey_bone_offset_matrices[2] ) * glm::rotate( glm::mat4(1.f), -glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[2];
+            glUniformMatrix4fv( bone_matrices_locations[2], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
+        }
+        if ( glfwGetKey( g_window, 'X' ) ) {
+            theta -= rot_speed * elapsed_seconds;
+            glUseProgram( shader_programme );
+            
+            ear_mat = glm::inverse( monkey_bone_offset_matrices[1] ) * glm::rotate( glm::mat4(1.f), glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[1];
+            glUniformMatrix4fv( bone_matrices_locations[1], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
+            
+            ear_mat = glm::inverse( monkey_bone_offset_matrices[2] ) * glm::rotate( glm::mat4(1.f), -glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[2];
+            glUniformMatrix4fv( bone_matrices_locations[2], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
         }
         
         if ( GLFW_PRESS == glfwGetKey( g_window, GLFW_KEY_ESCAPE ) ) {
