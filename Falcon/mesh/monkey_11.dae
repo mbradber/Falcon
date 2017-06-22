@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.78.0 commit date:2017-02-24, commit time:14:33, hash:e92f235</authoring_tool>
     </contributor>
-    <created>2017-06-21T16:37:40</created>
-    <modified>2017-06-21T16:37:40</modified>
+    <created>2017-06-22T11:37:55</created>
+    <modified>2017-06-22T11:37:55</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -148,6 +148,104 @@
       </mesh>
     </geometry>
   </library_geometries>
+  <library_animations>
+    <animation id="Head_Middle_pose_matrix">
+      <source id="Head_Middle_pose_matrix-input">
+        <float_array id="Head_Middle_pose_matrix-input-array" count="3">0.04166662 5.208333 10.41667</float_array>
+        <technique_common>
+          <accessor source="#Head_Middle_pose_matrix-input-array" count="3" stride="1">
+            <param name="TIME" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="Head_Middle_pose_matrix-output">
+        <float_array id="Head_Middle_pose_matrix-output-array" count="48">1 0 0 0 0 1 -8.19564e-8 0 0 8.19564e-8 1 0 0 0 0 1 1 0 0 0 0 1 -8.19564e-8 1.5 0 8.19564e-8 1 -3.15163e-9 0 0 0 1 1 0 0 0 0 1 -8.19564e-8 0 0 8.19564e-8 1 0 0 0 0 1</float_array>
+        <technique_common>
+          <accessor source="#Head_Middle_pose_matrix-output-array" count="3" stride="16">
+            <param name="TRANSFORM" type="float4x4"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="Head_Middle_pose_matrix-interpolation">
+        <Name_array id="Head_Middle_pose_matrix-interpolation-array" count="3">LINEAR LINEAR LINEAR</Name_array>
+        <technique_common>
+          <accessor source="#Head_Middle_pose_matrix-interpolation-array" count="3" stride="1">
+            <param name="INTERPOLATION" type="name"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <sampler id="Head_Middle_pose_matrix-sampler">
+        <input semantic="INPUT" source="#Head_Middle_pose_matrix-input"/>
+        <input semantic="OUTPUT" source="#Head_Middle_pose_matrix-output"/>
+        <input semantic="INTERPOLATION" source="#Head_Middle_pose_matrix-interpolation"/>
+      </sampler>
+      <channel source="#Head_Middle_pose_matrix-sampler" target="Middle/transform"/>
+    </animation>
+    <animation id="Head_Right_pose_matrix">
+      <source id="Head_Right_pose_matrix-input">
+        <float_array id="Head_Right_pose_matrix-input-array" count="3">0.04166662 5.208333 10.41667</float_array>
+        <technique_common>
+          <accessor source="#Head_Right_pose_matrix-input-array" count="3" stride="1">
+            <param name="TIME" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="Head_Right_pose_matrix-output">
+        <float_array id="Head_Right_pose_matrix-output-array" count="48">1 0 0 -0.8380514 0 1 5.96046e-8 -0.2293361 0 -5.96046e-8 1 -0.5401147 0 0 0 1 0.7047248 -0.7094808 1.58581e-8 -0.8380514 0.7094808 0.7047248 6.62045e-8 -0.2293361 -5.81465e-8 -3.5405e-8 1 -0.5401147 0 0 0 1 1 0 0 -0.8380514 0 1 5.96046e-8 -0.2293361 0 -5.96046e-8 1 -0.5401147 0 0 0 1</float_array>
+        <technique_common>
+          <accessor source="#Head_Right_pose_matrix-output-array" count="3" stride="16">
+            <param name="TRANSFORM" type="float4x4"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="Head_Right_pose_matrix-interpolation">
+        <Name_array id="Head_Right_pose_matrix-interpolation-array" count="3">LINEAR LINEAR LINEAR</Name_array>
+        <technique_common>
+          <accessor source="#Head_Right_pose_matrix-interpolation-array" count="3" stride="1">
+            <param name="INTERPOLATION" type="name"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <sampler id="Head_Right_pose_matrix-sampler">
+        <input semantic="INPUT" source="#Head_Right_pose_matrix-input"/>
+        <input semantic="OUTPUT" source="#Head_Right_pose_matrix-output"/>
+        <input semantic="INTERPOLATION" source="#Head_Right_pose_matrix-interpolation"/>
+      </sampler>
+      <channel source="#Head_Right_pose_matrix-sampler" target="Right/transform"/>
+    </animation>
+    <animation id="Head_Left_pose_matrix">
+      <source id="Head_Left_pose_matrix-input">
+        <float_array id="Head_Left_pose_matrix-input-array" count="3">0.04166662 5.208333 10.41667</float_array>
+        <technique_common>
+          <accessor source="#Head_Left_pose_matrix-input-array" count="3" stride="1">
+            <param name="TIME" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="Head_Left_pose_matrix-output">
+        <float_array id="Head_Left_pose_matrix-output-array" count="48">1 0 0 0.8724321 0 1 0 -0.230111 0 0 1 -0.5685219 0 0 0 1 0.6465793 0.7628468 -6.25202e-8 1.022432 -0.7628468 0.6465793 2.89651e-8 -0.230111 6.25202e-8 2.89651e-8 1 -0.5685219 0 0 0 1 1 0 0 0.8724321 0 1 0 -0.230111 0 0 1 -0.5685219 0 0 0 1</float_array>
+        <technique_common>
+          <accessor source="#Head_Left_pose_matrix-output-array" count="3" stride="16">
+            <param name="TRANSFORM" type="float4x4"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="Head_Left_pose_matrix-interpolation">
+        <Name_array id="Head_Left_pose_matrix-interpolation-array" count="3">LINEAR LINEAR LINEAR</Name_array>
+        <technique_common>
+          <accessor source="#Head_Left_pose_matrix-interpolation-array" count="3" stride="1">
+            <param name="INTERPOLATION" type="name"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <sampler id="Head_Left_pose_matrix-sampler">
+        <input semantic="INPUT" source="#Head_Left_pose_matrix-input"/>
+        <input semantic="OUTPUT" source="#Head_Left_pose_matrix-output"/>
+        <input semantic="INTERPOLATION" source="#Head_Left_pose_matrix-interpolation"/>
+      </sampler>
+      <channel source="#Head_Left_pose_matrix-sampler" target="Left/transform"/>
+    </animation>
+  </library_animations>
   <library_controllers>
     <controller id="Head_Suzanne-skin" name="Head">
       <skin source="#Suzanne-mesh">
@@ -169,9 +267,9 @@
           </technique_common>
         </source>
         <source id="Head_Suzanne-skin-weights">
-          <float_array id="Head_Suzanne-skin-weights-array" count="505">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.9999999 0 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 0.9999659 3.40429e-5 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.9791679 0.020832 0.9999994 6.06178e-7 1 1 1 1 1 1 0.9931588 0.006841242 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.5280467 0.4719533 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.4932062 0.5067938 1 1 1 1 1 0.08008396 0.919916 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.01496785 0.9850321 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.07340854 0.9265914 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.01655495 0.983445 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</float_array>
+          <float_array id="Head_Suzanne-skin-weights-array" count="523">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.9999999 0 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 0.9999659 3.40429e-5 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.9791679 0.020832 0.9999994 6.06178e-7 1 1 1 1 1 1 1 1 0.9931588 0.006841242 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.5280467 0.4719533 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.4932062 0.5067938 1 1 1 1 1 0.08008396 0.919916 1 0.01939362 0.9806064 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.01496785 0.9850321 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.07340854 0.9265914 1 1 1 1 1 1 1 1 1 1 1 1 1 0.008375644 0.9916244 1 1 1 0.01655495 0.983445 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</float_array>
           <technique_common>
-            <accessor source="#Head_Suzanne-skin-weights-array" count="505" stride="1">
+            <accessor source="#Head_Suzanne-skin-weights-array" count="523" stride="1">
               <param name="WEIGHT" type="float"/>
             </accessor>
           </technique_common>
@@ -183,8 +281,8 @@
         <vertex_weights count="507">
           <input semantic="JOINT" source="#Head_Suzanne-skin-joints" offset="0"/>
           <input semantic="WEIGHT" source="#Head_Suzanne-skin-weights" offset="1"/>
-          <vcount>1 1 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 1 0 1 1 1 1 1 0 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 0 1 0 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 </vcount>
-          <v>0 0 0 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 11 0 12 0 13 0 14 0 15 0 16 0 17 0 18 0 19 0 20 0 21 0 22 0 23 0 24 0 25 0 26 0 27 0 28 0 29 0 30 0 31 0 32 0 33 0 34 0 35 0 36 0 37 0 38 0 39 0 40 0 41 0 42 0 43 0 44 0 45 0 46 0 47 0 48 0 49 0 50 0 51 0 52 0 53 0 54 0 55 0 56 0 57 0 58 0 59 0 60 0 61 0 62 0 63 0 64 0 65 0 66 0 67 0 68 0 69 0 70 0 71 0 72 0 73 0 74 0 75 0 76 0 77 0 78 0 79 0 80 0 81 0 82 0 83 0 84 0 85 0 86 0 87 0 88 2 89 0 90 0 91 2 92 0 93 0 94 0 95 0 96 0 97 0 98 0 99 0 100 0 101 0 102 0 103 0 104 0 105 0 106 0 107 0 108 0 109 0 110 0 111 0 112 0 113 0 114 0 115 0 116 0 117 0 118 0 119 0 120 0 121 0 122 0 123 0 124 0 125 0 126 0 127 0 128 0 129 0 130 0 131 0 132 0 133 0 134 0 135 0 136 0 137 0 138 0 139 0 140 0 141 0 142 0 143 0 144 0 145 0 146 0 147 0 148 0 149 0 150 0 151 0 152 0 153 0 154 0 155 0 156 0 157 0 158 0 159 0 160 0 161 0 162 0 163 0 164 0 165 0 166 0 167 0 168 0 169 0 170 0 171 0 172 0 173 0 174 0 175 0 176 0 177 0 178 0 179 0 180 0 181 0 182 0 183 0 184 0 185 0 186 0 187 0 188 0 189 0 190 0 191 0 192 0 193 0 194 0 195 0 196 0 197 0 198 0 199 0 200 0 201 0 202 0 203 0 204 0 205 0 206 0 207 0 208 0 209 0 210 0 211 0 212 0 213 0 214 0 215 0 216 0 217 0 218 0 219 0 220 0 221 0 222 0 223 0 224 0 225 0 226 0 227 0 228 0 229 0 230 0 231 0 232 0 233 0 234 0 235 0 236 0 237 0 238 0 239 0 240 0 241 0 242 0 243 0 244 0 245 0 246 0 247 0 248 0 249 0 250 0 251 0 252 0 253 0 254 0 255 0 256 0 257 0 258 0 259 0 260 0 261 0 262 0 263 0 264 0 265 0 266 0 267 0 268 0 269 0 270 0 271 0 272 0 273 0 274 0 275 0 276 0 277 0 278 0 279 0 280 0 281 0 282 0 283 0 284 2 285 0 286 0 287 2 288 0 289 0 290 0 291 0 292 0 293 0 294 0 295 0 296 0 297 0 298 0 299 0 300 0 301 0 302 0 303 0 304 0 305 1 306 0 307 2 308 0 309 0 310 0 311 0 312 0 313 0 314 0 315 1 316 0 317 0 318 0 319 0 320 0 321 0 322 0 323 0 324 0 325 0 326 0 327 0 328 0 329 0 330 0 331 0 332 0 333 0 334 0 335 0 336 0 337 0 338 0 339 0 340 0 341 0 342 0 343 0 344 0 345 0 346 0 347 0 348 1 349 0 350 0 351 0 352 0 353 0 354 0 355 0 356 0 357 0 358 2 359 0 360 0 361 0 362 0 363 0 364 0 365 0 366 0 367 0 368 0 369 0 370 0 371 0 372 0 373 0 374 0 375 0 376 0 377 0 378 0 379 2 380 1 381 0 382 0 383 0 384 0 385 0 386 2 387 1 388 2 389 1 390 2 391 1 392 2 393 1 394 2 395 1 396 2 397 1 398 2 399 1 400 2 401 1 402 2 403 1 404 2 405 1 406 2 407 1 408 2 409 1 410 2 411 1 412 0 413 2 414 1 415 1 416 2 417 1 418 2 419 1 420 2 421 1 422 2 423 1 424 2 425 1 426 2 427 1 428 0 429 2 430 1 431 1 432 2 433 1 434 2 435 1 436 2 437 1 438 2 439 1 440 0 441 0 442 2 443 1 444 2 445 1 446 0 447 2 448 1 449 1 450 1 451 2 452 1 453 2 454 1 455 2 456 1 457 2 458 1 459 1 460 2 461 1 462 2 463 1 464 2 465 1 466 2 467 1 468 2 469 1 470 2 471 1 472 2 473 1 474 2 475 1 476 2 477 1 478 2 479 1 480 2 481 1 482 2 483 1 484 2 485 1 486 2 487 1 488 2 489 1 490 2 491 1 492 2 493 1 494 2 495 1 496 2 497 1 498 2 499 1 500 2 501 1 502 2 503 1 504</v>
+          <vcount>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 2 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 </vcount>
+          <v>0 0 0 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 11 0 12 0 13 0 14 0 15 0 16 0 17 0 18 0 19 0 20 0 21 0 22 0 23 0 24 0 25 0 26 0 27 0 28 0 29 0 30 0 31 0 32 0 33 0 34 0 35 0 36 0 37 0 38 0 39 0 40 0 41 0 42 0 43 0 44 0 45 0 46 0 47 0 48 0 49 0 50 0 51 0 52 0 53 0 54 0 55 0 56 0 57 0 58 0 59 0 60 0 61 0 62 0 63 0 64 0 65 0 66 0 67 0 68 0 69 0 70 0 71 0 72 0 73 0 74 0 75 0 76 0 77 0 78 0 79 0 80 0 81 0 82 0 83 0 84 0 85 0 86 0 87 0 88 0 89 0 90 0 91 0 92 0 93 0 94 0 95 0 96 0 97 2 98 0 99 0 100 2 101 0 102 0 103 0 104 0 105 0 106 0 107 0 108 0 109 0 110 0 111 0 112 0 113 0 114 0 115 0 116 0 117 0 118 0 119 0 120 0 121 0 122 0 123 0 124 0 125 0 126 0 127 0 128 0 129 0 130 0 131 0 132 0 133 0 134 0 135 0 136 0 137 0 138 0 139 0 140 0 141 0 142 0 143 0 144 0 145 0 146 0 147 0 148 0 149 0 150 0 151 0 152 0 153 0 154 0 155 0 156 0 157 0 158 0 159 0 160 0 161 0 162 0 163 0 164 0 165 0 166 0 167 0 168 0 169 0 170 0 171 0 172 0 173 0 174 0 175 0 176 0 177 0 178 0 179 0 180 0 181 0 182 0 183 0 184 0 185 0 186 0 187 0 188 0 189 0 190 0 191 0 192 0 193 0 194 0 195 0 196 0 197 0 198 0 199 0 200 0 201 0 202 0 203 0 204 0 205 0 206 0 207 0 208 0 209 0 210 0 211 0 212 0 213 0 214 0 215 0 216 0 217 0 218 0 219 0 220 0 221 0 222 0 223 0 224 0 225 0 226 0 227 0 228 0 229 0 230 0 231 0 232 0 233 0 234 0 235 0 236 0 237 0 238 0 239 0 240 0 241 0 242 0 243 0 244 0 245 0 246 0 247 0 248 0 249 0 250 0 251 0 252 0 253 0 254 0 255 0 256 0 257 0 258 0 259 0 260 0 261 0 262 0 263 0 264 0 265 0 266 0 267 0 268 0 269 0 270 0 271 0 272 0 273 0 274 0 275 0 276 0 277 0 278 0 279 0 280 0 281 0 282 0 283 0 284 0 285 0 286 0 287 0 288 0 289 0 290 0 291 0 292 0 293 2 294 0 295 0 296 2 297 0 298 0 299 0 300 0 301 0 302 0 303 0 304 0 305 0 306 0 307 0 308 0 309 0 310 0 311 0 312 0 313 0 314 1 315 0 316 2 317 0 318 0 319 0 320 0 321 0 322 0 323 0 324 0 325 0 326 1 327 0 328 0 329 0 330 0 331 0 332 0 333 0 334 0 335 0 336 0 337 0 338 0 339 0 340 0 341 0 342 0 343 0 344 0 345 0 346 0 347 0 348 0 349 0 350 0 351 0 352 0 353 0 354 0 355 0 356 0 357 0 358 0 359 1 360 0 361 0 362 0 363 0 364 0 365 0 366 0 367 0 368 0 369 2 370 0 371 0 372 0 373 0 374 0 375 0 376 0 377 0 378 0 379 0 380 0 381 0 382 0 383 0 384 0 385 0 386 0 387 0 388 0 389 0 390 2 391 1 392 0 393 0 394 0 395 0 396 0 397 2 398 1 399 0 400 2 401 1 402 2 403 1 404 2 405 1 406 2 407 1 408 2 409 1 410 2 411 1 412 2 413 1 414 2 415 1 416 2 417 1 418 2 419 1 420 2 421 1 422 2 423 1 424 0 425 2 426 1 427 2 428 1 429 2 430 1 431 2 432 1 433 2 434 1 435 2 436 1 437 2 438 1 439 2 440 1 441 0 442 2 443 1 444 2 445 1 446 2 447 1 448 2 449 1 450 2 451 1 452 2 453 1 454 0 455 0 456 0 457 2 458 1 459 2 460 1 461 0 462 2 463 1 464 2 465 1 466 2 467 1 468 2 469 1 470 2 471 1 472 2 473 1 474 2 475 1 476 2 477 1 478 2 479 1 480 2 481 1 482 2 483 1 484 2 485 1 486 2 487 1 488 2 489 1 490 2 491 1 492 2 493 1 494 2 495 1 496 2 497 1 498 2 499 1 500 2 501 1 502 2 503 1 504 2 505 1 506 2 507 1 508 2 509 1 510 2 511 1 512 2 513 1 514 2 515 1 516 2 517 1 518 2 519 1 520 2 521 1 522</v>
         </vertex_weights>
       </skin>
     </controller>
@@ -192,15 +290,27 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="Camera" name="Camera" type="NODE">
-        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.481132 0.7276763 0.3054208 -0.6141704 -6.50764 0 0.8953956 0.4452714 5.343665 0 0 0 1</matrix>
+        <translate sid="location">7.481132 -6.50764 5.343665</translate>
+        <rotate sid="rotationZ">0 0 1 46.69194</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 63.5593</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_camera url="#Camera-camera"/>
       </node>
       <node id="Lamp" name="Lamp" type="NODE">
-        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
+        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
+        <rotate sid="rotationY">0 1 0 3.163707</rotate>
+        <rotate sid="rotationX">1 0 0 37.26105</rotate>
+        <scale sid="scale">1 0.9999999 1</scale>
         <instance_light url="#Lamp-light"/>
       </node>
       <node id="Head" name="Head" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <translate sid="location">0 0 0</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <node id="Middle" name="Middle" sid="Middle" type="JOINT">
           <matrix sid="transform">1 0 0 0 0 1 -8.19564e-8 0 0 8.19564e-8 1 0 0 0 0 1</matrix>
           <node id="Right" name="Right" sid="Right" type="JOINT">
