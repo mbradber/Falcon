@@ -26,7 +26,7 @@
 
 //#define MESH_FILE "mesh/cube.dae"
 //#define MESH_FILE "mesh/monkey2.obj"
-#define MESH_FILE "mesh/monkey_10.dae"
+#define MESH_FILE "mesh/monkey_11.dae"
 
 #define GL_LOG_FILE "gl.log"
 
@@ -38,6 +38,23 @@ int g_gl_width = 640;
 int g_gl_height = 480;
 GLFWwindow *g_window = NULL;
 
+/* temporary array of per-bone animations that we control from the keyboard */
+glm::mat4 g_local_anims[MAX_BONES];
+
+/* data structure that we will use to make a hierarchical tree for our skeleton
+ */
+struct Skeleton_Node;
+struct Skeleton_Node {
+    Skeleton_Node *children[MAX_BONES];
+    /* name of the bone - might be useful to remember for doing interesting stuff
+     in your programme */
+    char name[64];
+    int num_children;
+    /* if this node corresponds to one of our weight-painted bones then we give
+     the index of that (the bone_ID) here, otherwrise it is set to -1 */
+    int bone_index;
+};
+
 glm::mat4 convert_assimp_matrix( aiMatrix4x4 m ) {
     float srcmat[16] = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
                 0.0f, m.a4, m.b4, m.c4, m.d4 };
@@ -45,9 +62,94 @@ glm::mat4 convert_assimp_matrix( aiMatrix4x4 m ) {
     return glm::make_mat4(srcmat);
 }
 
+/* recursive function to pull all of AssImps 'node' hierarchy out. AssImp's
+ tree will include everything in the scene; cameras, lights, the mesh, but also
+ our "Armature" which further breaks into our skeleton hierarchy. When we find a
+ node, we check if its name matches one of our bones' names. if so we record the
+ index of that bone. */
+
+bool import_skeleton_node( aiNode *assimp_node, Skeleton_Node **skeleton_node,
+                          int bone_count, char bone_names[][64] ) {
+    // allocate memory for node
+    Skeleton_Node *temp = (Skeleton_Node *)malloc( sizeof( Skeleton_Node ) );
+    
+    // get node properties out of AssImp
+    strcpy( temp->name, assimp_node->mName.C_Str() );
+    printf( "-node name = %s\n", temp->name );
+    temp->num_children = 0;
+    printf( "node has %i children\n", (int)assimp_node->mNumChildren );
+    temp->bone_index = -1;
+    for ( int i = 0; i < MAX_BONES; i++ ) {
+        temp->children[i] = NULL;
+    }
+    
+    // look for matching bone name
+    bool has_bone = false;
+    for ( int i = 0; i < bone_count; i++ ) {
+        if ( strcmp( bone_names[i], temp->name ) == 0 ) {
+            printf( "node uses bone %i\n", i );
+            temp->bone_index = i;
+            has_bone = true;
+            break;
+        }
+    }
+    if ( !has_bone ) {
+        printf( "no bone found for node\n" );
+    }
+    
+    bool has_useful_child = false;
+    for ( int i = 0; i < (int)assimp_node->mNumChildren; i++ ) {
+        if ( import_skeleton_node( assimp_node->mChildren[i],
+                                  &temp->children[temp->num_children], bone_count,
+                                  bone_names ) ) {
+            has_useful_child = true;
+            temp->num_children++;
+        } else {
+            printf( "useless child culled\n" );
+        }
+    }
+    if ( has_useful_child || has_bone ) {
+        // point parameter to our allocated node
+        *skeleton_node = temp;
+        return true;
+    }
+    // no bone or good children - cull self
+    free( temp );
+    temp = NULL;
+    return false;
+}
+
+/* recursive animation using hierarchy. animate node, children inherit
+ animation */
+void skeleton_animate( Skeleton_Node *node, glm::mat4 parent_mat, glm::mat4 *bone_offset_mats, glm::mat4 *bone_animation_mats ) {
+    assert( node );
+    
+    /* the animation of a node after inheriting its parent's animation */
+    glm::mat4 our_mat = parent_mat;
+    /* the animation for a particular bone at this time */
+    glm::mat4 local_anim = glm::mat4(1.f);
+    
+    // if node has a weighted bone...
+    int bone_i = node->bone_index;
+    if ( bone_i > -1 ) {
+        // ... then get offset matrices
+        glm::mat4 bone_offset = bone_offset_mats[bone_i];
+        glm::mat4 inv_bone_offset = glm::inverse( bone_offset );
+        // ... at the moment get the per-bone animation from keyboard input
+        local_anim = g_local_anims[bone_i];
+        
+        our_mat = parent_mat * inv_bone_offset * local_anim * bone_offset;
+        bone_animation_mats[bone_i] = our_mat;
+    }
+    for ( int i = 0; i < node->num_children; i++ ) {
+        skeleton_animate( node->children[i], our_mat, bone_offset_mats,
+                         bone_animation_mats );
+    }
+}
+
 /* load a mesh using the assimp library */
 bool load_mesh( const char *file_name, GLuint *vao, int *point_count,
-               glm::mat4 *bone_offset_mats, int *bone_count ) {
+               glm::mat4 *bone_offset_mats, int *bone_count, Skeleton_Node** root_node ) {
     const aiScene *scene = aiImportFile( file_name, aiProcess_Triangulate );
     if ( !scene ) {
         fprintf( stderr, "ERROR: reading mesh %s\n", file_name );
@@ -145,6 +247,14 @@ bool load_mesh( const char *file_name, GLuint *vao, int *point_count,
             }
             
         } // endfor
+        
+        // there should always be a 'root node', even if no skeleton exists
+        aiNode *assimp_node = scene->mRootNode;
+        
+        if ( !import_skeleton_node( assimp_node, root_node, *bone_count,
+                                   bone_names ) ) {
+            fprintf( stderr, "ERROR: could not import node tree from mesh\n" );
+        } // endif
     }		// endif
     
     /* copy mesh data into VBOs */
@@ -212,10 +322,17 @@ int main() {
     /* load the mesh using assimp */
     GLuint monkey_vao;
     glm::mat4 monkey_bone_offset_matrices[MAX_BONES];
+    glm::mat4 monkey_bone_animation_mats[MAX_BONES];
+    for ( int i = 0; i < MAX_BONES; i++ ) {
+        monkey_bone_animation_mats[i] = glm::mat4(1.f);
+        monkey_bone_offset_matrices[i] = glm::mat4(1.f);
+        monkey_bone_animation_mats[i] = glm::mat4(1.f);
+        g_local_anims[i] = glm::mat4(1.f);
+    }
     int monkey_point_count = 0;
     int monkey_bone_count = 0;
-    ( load_mesh( MESH_FILE, &monkey_vao, &monkey_point_count,
-                monkey_bone_offset_matrices, &monkey_bone_count ) );
+    Skeleton_Node *monkey_root_node = NULL;
+    load_mesh( MESH_FILE, &monkey_vao, &monkey_point_count, monkey_bone_offset_matrices, &monkey_bone_count, &monkey_root_node );
     
     printf( "monkey bone count %i\n", monkey_bone_count );
     
@@ -303,6 +420,7 @@ int main() {
     
     float theta = 0.0f;
     float rot_speed = 50.0f; // 50 radians per second
+    float y = 0.f; // position of head;
     
     // render loop
     while ( !glfwWindowShouldClose( g_window ) ) {
@@ -381,27 +499,36 @@ int main() {
             glUniformMatrix4fv( bones_view_mat_location, 1, GL_FALSE, (const float*)glm::value_ptr(mat_view) );
         }
         
-        // rotate ears
-        glm::mat4 ear_mat(1.f);
+        bool monkey_moved = false;
+        
         if ( glfwGetKey( g_window, 'Z' ) ) {
             theta += rot_speed * elapsed_seconds;
-            glUseProgram( shader_programme );
-            
-            ear_mat = glm::inverse( monkey_bone_offset_matrices[1] ) * glm::rotate( glm::mat4(1.f), glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[1];
-            glUniformMatrix4fv( bone_matrices_locations[1], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
-            
-            ear_mat = glm::inverse( monkey_bone_offset_matrices[2] ) * glm::rotate( glm::mat4(1.f), -glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[2];
-            glUniformMatrix4fv( bone_matrices_locations[2], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
+            g_local_anims[1] = glm::rotate( glm::mat4(1.f), glm::radians(theta), glm::vec3(0, 0, 1) );
+            g_local_anims[2] = glm::rotate( glm::mat4(1.f), glm::radians(-theta), glm::vec3(0, 0, 1) );
+            monkey_moved = true;
         }
         if ( glfwGetKey( g_window, 'X' ) ) {
             theta -= rot_speed * elapsed_seconds;
+            g_local_anims[1] = glm::rotate( glm::mat4(1.f), glm::radians(theta), glm::vec3(0, 0, 1) );
+            g_local_anims[2] = glm::rotate( glm::mat4(1.f), glm::radians(-theta), glm::vec3(0, 0, 1) );
+            monkey_moved = true;
+        }
+        if ( glfwGetKey( g_window, 'C' ) ) {
+            y -= 0.5f * elapsed_seconds;
+            g_local_anims[0] = glm::translate( glm::mat4(1.f), glm::vec3( 0.0f, y, 0.0f ) );
+            monkey_moved = true;
+        }
+        if ( glfwGetKey( g_window, 'V' ) ) {
+            y += 0.5f * elapsed_seconds;
+            g_local_anims[0] = glm::translate( glm::mat4(1.f), glm::vec3( 0.0f, y, 0.0f ) );
+            monkey_moved = true;
+        }
+        if ( monkey_moved ) {
+            skeleton_animate( monkey_root_node, glm::mat4(1.f), monkey_bone_offset_matrices, monkey_bone_animation_mats );
             glUseProgram( shader_programme );
-            
-            ear_mat = glm::inverse( monkey_bone_offset_matrices[1] ) * glm::rotate( glm::mat4(1.f), glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[1];
-            glUniformMatrix4fv( bone_matrices_locations[1], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
-            
-            ear_mat = glm::inverse( monkey_bone_offset_matrices[2] ) * glm::rotate( glm::mat4(1.f), -glm::radians(theta), glm::vec3(0, 0, 1) ) * monkey_bone_offset_matrices[2];
-            glUniformMatrix4fv( bone_matrices_locations[2], 1, GL_FALSE, (const float*)glm::value_ptr(ear_mat) );
+            glUniformMatrix4fv( bone_matrices_locations[0], monkey_bone_count, GL_FALSE, (const float*)glm::value_ptr(monkey_bone_animation_mats[0]) );
+            glUniformMatrix4fv( bone_matrices_locations[1], monkey_bone_count, GL_FALSE, (const float*)glm::value_ptr(monkey_bone_animation_mats[1]) );
+            glUniformMatrix4fv( bone_matrices_locations[2], monkey_bone_count, GL_FALSE, (const float*)glm::value_ptr(monkey_bone_animation_mats[2]) );
         }
         
         if ( GLFW_PRESS == glfwGetKey( g_window, GLFW_KEY_ESCAPE ) ) {
