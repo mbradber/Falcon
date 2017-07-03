@@ -39,6 +39,8 @@
 		C61FC8631EEC712F000F2188 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = lib/glew/lib/libGLEW.a; sourceTree = "<group>"; };
 		C66F9A241EF5D03C001A0303 /* stb_image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stb_image.cpp; path = Falcon/stb_image.cpp; sourceTree = "<group>"; };
 		C66F9A261EF5D062001A0303 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stb_image.h; path = Falcon/stb_image.h; sourceTree = "<group>"; };
+		C66F9A3E1F09DECE001A0303 /* post.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = post.frag; path = Falcon/shaders/post.frag; sourceTree = "<group>"; };
+		C66F9A3F1F09DECE001A0303 /* post.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = post.vert; path = Falcon/shaders/post.vert; sourceTree = "<group>"; };
 		C691FCF71EEC7B680090DE2C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		C691FCFA1EEC7B770090DE2C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		C691FCFC1EEC7B7E0090DE2C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -130,6 +132,8 @@
 		C691FD041EEC85400090DE2C /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				C66F9A3E1F09DECE001A0303 /* post.frag */,
+				C66F9A3F1F09DECE001A0303 /* post.vert */,
 				C691FD051EEC85910090DE2C /* test_vs.glsl */,
 				C691FD061EEC85C50090DE2C /* test_fs.glsl */,
 			);
